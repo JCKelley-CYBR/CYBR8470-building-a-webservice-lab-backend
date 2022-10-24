@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from django.core import validators
 import django.db.models.deletion
 
 
@@ -35,28 +36,95 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Dogs',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=1000)),
-                ('age', models.IntegerField()),
-                ('breed', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='breeds', to='api.Breeds')),
-                ('gender', models.CharField(blank=True, max_length=1000)),
-                ('color', models.CharField(blank=True, max_length=1000)),
-                ('favoritefood', models.CharField(blank=True, max_length=1000)),
-                ('favoritetoy', models.CharField(blank=True, max_length=1000)),
+            name = 'Dog',
+            fields = [
+                ('id', models.AutoField(
+                    auto_created = True,
+                    primary_key = True,
+                    serialize = False,
+                    verbose_name = 'ID'
+                )),
+                ('name', models.CharField(
+                    default = 'Reese',
+                    max_length = 25
+                )),
+                ('age', models.IntegerField(
+                    default = 1
+                )),
+                ('breed', models.ForeignKey(
+                    on_delete = django.db.models.deletion.CASCADE,
+                    related_name = 'breeds',
+                    to = 'api.Breed'
+                )),
+                ('gender', models.CharField(
+                    default = 'Female',
+                    max_length = 6
+                )),
+                ('color', models.CharField(
+                    default = 'Red Merle',
+                    max_length = 25
+                )),
+                ('favoritefood', models.CharField(
+                    default = 'Twizzlers',
+                    max_length = 25
+                )),
+                ('favoritetoy', models.CharField(
+                    default = 'Frisbee',
+                    max_length = 25
+                )),
             ],
         ),
         migrations.CreateModel(
-            name='Breeds',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=1000)),
-                ('size', models.IntegerField()),
-                ('friendliness', models.IntegerField()),
-                ('trainability', models.IntegerField()),
-                ('sheddingamount', models.IntegerField()),
-                ('exerciseneeds', models.IntegerField()),
+            name = 'Breed',
+            fields = [
+                ('id', models.AutoField(
+                    auto_created = True,
+                    primary_key = True,
+                    serialize = False,
+                    verbose_name = 'ID'
+                )),
+                ('name', models.CharField(
+                    default = 'Australian Shepherd',
+                    max_length = 25
+                )),
+                ('size', models.IntegerField(
+                    default = 'Medium',
+                    max_length = 6,
+                    choices = [
+                        'Tiny',
+                        'Small',
+                        'Medium',
+                        'Large'
+                    ]
+                )),
+                ('friendliness', models.IntegerField(
+                    default = 5,
+                    validators = [
+                        MaxValueValidator(5),
+                        MinValueValidator(1)
+                    ]
+                )),
+                ('trainability', models.IntegerField(
+                    default = 5,
+                    validators = [
+                        MaxValueValidator(5),
+                        MinValueValidator(1)
+                    ]
+                )),
+                ('sheddingamount', models.IntegerField(
+                    default = 5,
+                    validators = [
+                        MaxValueValidator(5),
+                        MinValueValidator(1)
+                    ]
+                )),
+                ('exerciseneeds', models.IntegerField(
+                    default = 5,
+                    validators = [
+                        MaxValueValidator(5),
+                        MinValueValidator(1)
+                    ]
+                )),
             ],
         ),
     ]

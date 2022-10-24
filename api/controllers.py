@@ -215,12 +215,15 @@ class ActivateIFTTT(APIView):
         newEvent.save()
         print 'New Event Logged'
         return Response({'success': True}, status=status.HTTP_200_OK)
-class DogList(APIView):
-    def get(self, request, format=None):
-    def post(self, request):
-        print 'REQUEST DATA'
-        print str(request.data)
 
+
+class DogList(APIView):
+    def get(self, request, format = None):
+        dogs = Dog.objects.all()
+        json_data = serializers.serialize('json', dogs)
+        return HttpResponse(json_data, content_type = 'json')
+
+    def post(self, request):
         name = request.data.get('name')
         age = int(request.data.get('age'))
         breed = int(request.data.get('breed'))  # Foreign key with Breed DB
@@ -230,82 +233,153 @@ class DogList(APIView):
         favoritetoy = request.data.get('favoritetoy')
 
         newDog = Dog(
-            name = name
-            age = age
-            breed = breed
-            gender = gender
-            color = color
-            favoritefood = favoritefood
+            name = name,
+            age = age,
+            breed = breed,
+            gender = gender,
+            color = color,
+            favoritefood = favoritefood,
             favoritetoy = favoritetoy
         )
+
+        try:
+            newDog.clean_fields()
+        except Exception as e:
+            print e
+            return Response({'success':False, 'error':e}, status = status.HTTP_400_BAD_REQUEST)
+
+        #Log event to DB
+        newDog.save()
+        return Response({'success': True}, status = status.HTTP_200_OK)
+
+
 class DogDetails(APIView):
-    def get(self, request, format=None):
-    def put(self, request):
-    def delete(self, request, *args, **kwargs):
+    def get_object(self, pk):
+        try:
+            return Dog.objects.get(pk = pk)
+        except Dog.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, *args, **kwargs):
+        dog = Dog.objects.filter(pk = pk)
+        json_data = serializers.serialize('json', breed)
+        return HttpResponse(json_data, content_type = 'json')
+
+    def put(self, request, pk,  *args, **kwargs):
+        dog = Dog.get_object(pk)
+
+        if (request.data.get('name')):
+            dog.name = request.data.get('name')
+        if (request.data.get('age')):
+            dog.age = int(request.data.get('age'))
+        if (request.data.get('breed')):
+            breed.breed = request.data.get('breed')
+            if (Breed.objects.filter(pk = pk).exists()):
+                dog.breed = Breed.object.get(pk = request.data.get('breed'))
+            else"
+                return Response({'success':False, 'error': 'Breed does not exist'}, status = status.HTTP_400_BAD_REQUEST)
+        if (request.data.get('gender')):
+            dog.gender = request.data.get('gender')
+        if (request.data.get('color')):
+            dog.color = request.data.get('color')
+        if (request.data.get('favoritefood')):
+            dog.favoritefood = request.data.get('favoritefood')
+        if (request.data.get('favoritetoy')):
+            dog.favoritetoy = request.data.get('favoritetoy')
+
+        try:
+            dog.clean_fields()
+        except Exception as e:
+            print e
+            return Response({'success':False, 'error':e}, status = status.HTTP_400_BAD_REQUEST)
+
+        #Log event to DB
+        dog.save()
+        return Response({'success': True}, status = status.HTTP_200_OK)
+
+    def delete(self, request, pk, *args, **kwargs):
+        if (dog.objects.filter(pk = pk).exists()):
+            dog.get_object(pk).delete()
+            return Response({'success': True}, status = status.HTTP_204_NO_CONTENT)
+
 class BreedsList(APIView):
     permission_classes = (AllowAny,)
     parser_classes = (parsers.JSONParser,parsers.FormParser)
     renderer_classes = (renderers.JSONRenderer, )
 
-    def form_response(self, name, size, friendliness, trainability, sheddingamount, exerciseneeds, error=""):
-        data = {
-            'name': name,
-            'size': size,
-            'friendliness': friendliness,
-            'trainability': trainability,
-            'sheddingamount': sheddingamount,
-            'exerciseneeds': exerciseneeds
-        }
-        if error:
-            data['message'] = error
+    def get(self, request, format = None):
+        breeds = Breed.objects.all()
+        json_data = serializers.serialize('json', breeds)
+        return HttpResponse(json_data, content_type='json')
 
-        return Response(data)
-
-    def get(self, request, format=None):
-
-
-    def post(self, request):
-        print 'REQUEST DATA'
-        print str(request.data)
-
+    def post(self, request, *args, **kwargs):
         name = request.data.get('name')
-        size = request.data.get('size') # Accepts Tiny, Small, Medium, Large
+        size = request.data.get('size').upper() # Accepts Tiny, Small, Medium, Large
         friendliness = int(request.data.get('friendliness')) # Accepts ints 1-5
         trainability = int(request.data.get('trainability')) # Accepts ints 1-5
         sheddingamount = int(request.data.get('sheddingamount')) # Accepts ints 1-5
         exerciseneeds = int(request.data.get('exerciseneeds')) # Accepts ints 1-5
 
         newBreed = Breed(
-            name = name
-            size = size
-            friendliness = friendliness
-            trainability = trainability
-            sheddingamount = sheddingamount
+            name = name,
+            size = size,
+            friendliness = friendliness,
+            trainability = trainability,
+            sheddingamount = sheddingamount,
             exerciseneeds = exerciseneeds
         )
 
-        if friendliness is > 5 && friendliness is < 1:
-            return self.form_response(False, None, None, None, None, None, None, "friendliness must be an integer between 1 and 5")
-        if trainability is > 5 && trainability is < 1:
-            return self.form_response(False, None, None, None, None, None, None, "trainability must be an integer between 1 and 5")
-        if sheddingamount is > 5 && sheddingamount is < 1:
-            return self.form_response(False, None, None, None, None, None, None, "sheddingamount must be an integer between 1 and 5")
-        if exerciseneeds is > 5 && exerciseneeds is < 1:
-            return self.form_response(False, None, None, None, None, None, None, "exerciseneeds must be an integer between 1 and 5")
-
         #Check that the event is safe for storage in the DB
         try:
-            newEvent.clean_fields()
-        except ValidationError as e:
+            newBreed.clean_fields()
+        except Exception as e:
             print e
             return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
 
         #Log event to DB
-        newEvent.save()
-        print 'New Event Logged'
+        newBreed.save()
         return Response({'success': True}, status=status.HTTP_200_OK)
 
-class BreedsDetail(APIView):
-    def get(self, request, format=None):
-    def put(self, request):
-    def delete(self, request, *args, **kwargs):
+
+class BreedDetails(APIView):
+    def get_object(self, pk):
+        try:
+            return Breed.objects.get(pk = pk)
+        except Breed.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, *args, **kwargs):
+        breed = Breed.objects.filter(pk = pk)
+        json_data = serializers.serialize('json', breed)
+        return HttpResponse(json_data, content_type = 'json')
+
+    def put(self, request, pk, *args, **kwargs):
+        breed = Breed.get_object(pk)
+
+        if (request.data.get('name')):
+            breed.name = request.data.get('name')
+        if (request.data.get('size')):
+            breed.size = request.data.get('size').upper()
+        if (request.data.get('friendliness')):
+            breed.friendliness = int(request.data.get('friendliness'))
+        if (request.data.get('trainability')):
+            breed.trainability = int(request.data.get('trainability'))
+        if (request.data.get('sheddingamount')):
+            breed.sheddingamount = int(request.data.get('sheddingamount'))
+        if (request.data.get('exerciseneeds')):
+            breed.exerciseneeds = int(request.data.get('exerciseneeds'))
+
+        try:
+            breed.clean_fields()
+        except Exception as e:
+            print e
+            return Response({'success':False, 'error':e}, status = status.HTTP_400_BAD_REQUEST)
+
+        #Log event to DB
+        breed.save()
+        return Response({'success': True}, status = status.HTTP_200_OK)
+
+    def delete(self, request, pk, *args, **kwargs):
+        if (breed.objects.filter(pk = pk).exists()):
+            breed.get_object(pk).delete()
+            return Response({'success': True}, status = status.HTTP_204_NO_CONTENT)
