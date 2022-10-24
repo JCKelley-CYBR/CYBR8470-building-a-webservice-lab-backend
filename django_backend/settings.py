@@ -23,6 +23,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 from .localsettings import *
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -38,8 +39,8 @@ else:
     DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.0.149', 'localhost', 'django']
-
-
+CRSF_TRUSTED_ORIGINS = ['http://localhost/']
+CORS_ORIGIN_WHITELIST = ['http://localhost/']
 # Application definition
 
 INSTALLED_APPS = [
@@ -53,10 +54,11 @@ INSTALLED_APPS = [
     #just api in production...
     'api',
     'rest_framework',
+    'rest_framework_json_api',
     #'axes',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -139,11 +141,17 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static/"),
 ]
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
-    'PAGE_SIZE': 10,
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'api.rest_framework_config.CsrfExemptSessionAuthentication',
-        'rest_framework.authentication.SessionAuthentication'
-    ],
+    'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework_json_api.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_json_api.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
 }

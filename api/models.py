@@ -8,69 +8,82 @@ from django.contrib.auth.models import User, Group
 from django.contrib import admin
 import base64
 
-class Event(models.Model):
-    eventtype = models.CharField(max_length=1000, blank=False)
-    timestamp = models.DateTimeField()
-    userid = models.CharField(max_length=1000, blank=True)
-    requestor = models.GenericIPAddressField(blank=False)
-
-    def __str__(self):
-        return str(self.eventtype)
-
-class EventAdmin(admin.ModelAdmin):
-    list_display = ('eventtype', 'timestamp')
-
-class ApiKey(models.Model):
-    owner = models.CharField(max_length=1000, blank=False)
-    key = models.CharField(max_length=5000, blank=False)
-
-    def __str__(self):
-        return str(self.owner) + str(self.key)
-
-class ApiKeyAdmin(admin.ModelAdmin):
-    list_display = ('owner','key')
-
-class Dog(models.Model):
-
-    def __str__(self):
-        return str(self.dogs)
-
-
 class Breed(models.Model):
-    name = name.CharField()
-    size = size.CharField()
-    friendliness = friendliness.IntegerField(
-        default=1,
-        validators=[
-            MaxValueValidator(5),
-            MinValueValidator(1)
-        ],
-        blank=False
+    name = models.CharField(
+        default = 'Australian Shepherd',
+        max_length = 25
     )
-    trainability = trainability.IntegerField(
-        default=1,
-        validators=[
-            MaxValueValidator(5),
-            MinValueValidator(1)
-        ],
-        blank=False
+    size = models.CharField(
+        default = 'Medium',
+        max_length = 6,
+        choices = [
+            ("TINY", "Tiny"),
+            ("SMALL", "Small"),
+            ("MEDIUM", "Medium"),
+            ("LARGE", "Large"),
+        ]
     )
-    sheddingamount = sheddingamount.IntegerField(
-        default=1,
-        validators=[
+    friendliness = models.IntegerField(
+        default = 5,
+        validators = [
             MaxValueValidator(5),
             MinValueValidator(1)
-        ],
-        blank=False
+        ]
     )
-    exerciseneeds = exerciseneeds.IntegerField(
-        default=1,
-        validators=[
+    trainability = models.IntegerField(
+        default = 5,
+        validators = [
             MaxValueValidator(5),
             MinValueValidator(1)
-        ],
-        blank=False
+        ]
+    )
+    sheddingamount = models.IntegerField(
+        default = 5,
+        validators = [
+            MaxValueValidator(5),
+            MinValueValidator(1)
+        ]
+    )
+    exerciseneeds = models.IntegerField(
+        default = 5,
+        validators = [
+            MaxValueValidator(5),
+            MinValueValidator(1)
+        ]
     )
 
     def __str__(self):
         return str(self.breed)
+
+
+class Dog(models.Model):
+    name = models.CharField(
+        default = 'Reese',
+        max_length = 25
+    )
+    age = models.IntegerField(
+        default = 1
+    )
+    breed = models.ForeignKey(
+        Breed,
+        on_delete = models.CASCADE
+    )
+    gender = models.CharField(
+        max_length = 6,
+        default = "Female"
+    )
+    color = models.CharField(
+        max_length = 25,
+        default = "Red Merle"
+    )
+    favoritefood = models.CharField(
+        max_length = 25,
+        default = "Twizzlers"
+    )
+    favoritetoy = models.CharField(
+        max_length = 25,
+        default = "Frisbee"
+    )
+
+    def __str__(self):
+        return str(self.dogs)
