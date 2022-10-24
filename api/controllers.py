@@ -215,3 +215,97 @@ class ActivateIFTTT(APIView):
         newEvent.save()
         print 'New Event Logged'
         return Response({'success': True}, status=status.HTTP_200_OK)
+class DogList(APIView):
+    def get(self, request, format=None):
+    def post(self, request):
+        print 'REQUEST DATA'
+        print str(request.data)
+
+        name = request.data.get('name')
+        age = int(request.data.get('age'))
+        breed = int(request.data.get('breed'))  # Foreign key with Breed DB
+        gender = request.data.get('gender')
+        color = request.data.get('color')
+        favoritefood = request.data.get('favoritefood')
+        favoritetoy = request.data.get('favoritetoy')
+
+        newDog = Dog(
+            name = name
+            age = age
+            breed = breed
+            gender = gender
+            color = color
+            favoritefood = favoritefood
+            favoritetoy = favoritetoy
+        )
+class DogDetails(APIView):
+    def get(self, request, format=None):
+    def put(self, request):
+    def delete(self, request, *args, **kwargs):
+class BreedsList(APIView):
+    permission_classes = (AllowAny,)
+    parser_classes = (parsers.JSONParser,parsers.FormParser)
+    renderer_classes = (renderers.JSONRenderer, )
+
+    def form_response(self, name, size, friendliness, trainability, sheddingamount, exerciseneeds, error=""):
+        data = {
+            'name': name,
+            'size': size,
+            'friendliness': friendliness,
+            'trainability': trainability,
+            'sheddingamount': sheddingamount,
+            'exerciseneeds': exerciseneeds
+        }
+        if error:
+            data['message'] = error
+
+        return Response(data)
+
+    def get(self, request, format=None):
+
+
+    def post(self, request):
+        print 'REQUEST DATA'
+        print str(request.data)
+
+        name = request.data.get('name')
+        size = request.data.get('size') # Accepts Tiny, Small, Medium, Large
+        friendliness = int(request.data.get('friendliness')) # Accepts ints 1-5
+        trainability = int(request.data.get('trainability')) # Accepts ints 1-5
+        sheddingamount = int(request.data.get('sheddingamount')) # Accepts ints 1-5
+        exerciseneeds = int(request.data.get('exerciseneeds')) # Accepts ints 1-5
+
+        newBreed = Breed(
+            name = name
+            size = size
+            friendliness = friendliness
+            trainability = trainability
+            sheddingamount = sheddingamount
+            exerciseneeds = exerciseneeds
+        )
+
+        if friendliness is > 5 && friendliness is < 1:
+            return self.form_response(False, None, None, None, None, None, None, "friendliness must be an integer between 1 and 5")
+        if trainability is > 5 && trainability is < 1:
+            return self.form_response(False, None, None, None, None, None, None, "trainability must be an integer between 1 and 5")
+        if sheddingamount is > 5 && sheddingamount is < 1:
+            return self.form_response(False, None, None, None, None, None, None, "sheddingamount must be an integer between 1 and 5")
+        if exerciseneeds is > 5 && exerciseneeds is < 1:
+            return self.form_response(False, None, None, None, None, None, None, "exerciseneeds must be an integer between 1 and 5")
+
+        #Check that the event is safe for storage in the DB
+        try:
+            newEvent.clean_fields()
+        except ValidationError as e:
+            print e
+            return Response({'success':False, 'error':e}, status=status.HTTP_400_BAD_REQUEST)
+
+        #Log event to DB
+        newEvent.save()
+        print 'New Event Logged'
+        return Response({'success': True}, status=status.HTTP_200_OK)
+
+class BreedsDetail(APIView):
+    def get(self, request, format=None):
+    def put(self, request):
+    def delete(self, request, *args, **kwargs):

@@ -34,4 +34,29 @@ class Migration(migrations.Migration):
                 ('device', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='events', to='api.Device')),
             ],
         ),
+        migrations.CreateModel(
+            name='Dogs',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=1000)),
+                ('age', models.IntegerField()),
+                ('breed', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='breeds', to='api.Breeds')),
+                ('gender', models.CharField(blank=True, max_length=1000)),
+                ('color', models.CharField(blank=True, max_length=1000)),
+                ('favoritefood', models.CharField(blank=True, max_length=1000)),
+                ('favoritetoy', models.CharField(blank=True, max_length=1000)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Breeds',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=1000)),
+                ('size', models.IntegerField()),
+                ('friendliness', models.IntegerField()),
+                ('trainability', models.IntegerField()),
+                ('sheddingamount', models.IntegerField()),
+                ('exerciseneeds', models.IntegerField()),
+            ],
+        ),
     ]
