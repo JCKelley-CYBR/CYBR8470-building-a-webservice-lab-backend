@@ -52,9 +52,6 @@ class Breed(models.Model):
         ]
     )
 
-    def __str__(self):
-        return str(self.breed)
-
 
 class Dog(models.Model):
     name = models.CharField(
@@ -84,6 +81,3 @@ class Dog(models.Model):
         max_length = 25,
         default = "Frisbee"
     )
-
-    def __str__(self):
-        return str(self.dogs)
